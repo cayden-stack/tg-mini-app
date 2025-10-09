@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraper Control</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Scraper Control Panel</h1>
+
+    <form id="scraper-form">
+        <label for="scrape-mode">Scrape Mode:</label>
+        <select id="scrape-mode" name="mode">
+            <option value="full">Full Scrape</option>
+            <option value="targeted">Targeted Scrape</option>
+            <option value="manual">Manual URL List</option>
+        </select>
+
+        <label for="targets">Targets (for Targeted Scrape):</label>
+        <input type="text" id="targets" name="targets" placeholder="e.g., biology, chemistry">
+
+        <button type="submit" id="submit-button">Start Scrape</button>
+    </form>
+
+    <div id="feedback"></div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
