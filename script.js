@@ -48,14 +48,16 @@ tagify.on('add', validateForm).on('remove', validateForm);
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
+    // First, hide everything
     commonOptions.style.display = 'none';
     directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
 
-    if (currentMode === 'full' || currentMode === 'directory') {
+    // Then, show only the sections we need for the current mode
+    if (currentMode === 'full') {
         commonOptions.style.display = 'flex';
-    }
-    if (currentMode === 'directory') {
+    } else if (currentMode === 'directory') {
+        commonOptions.style.display = 'flex';
         directoryScrapeOptions.style.display = 'flex';
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
