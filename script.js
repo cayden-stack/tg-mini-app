@@ -53,7 +53,7 @@ function updateFormVisibility() {
     urlScrapeOptions.style.display = 'none';
 
     if (currentMode === 'full' || currentMode === 'directory') {
-        commonOptions.style.display = 'flex'; // Changed to flex to match form's direction
+        commonOptions.style.display = 'flex';
     }
     if (currentMode === 'directory') {
         directoryScrapeOptions.style.display = 'flex';
@@ -61,7 +61,7 @@ function updateFormVisibility() {
         urlScrapeOptions.style.display = 'flex';
     }
 
-    validateForm(); // Re-validate the form whenever the mode changes
+    validateForm();
 }
 
 tabs.forEach(tab => {
@@ -93,7 +93,6 @@ form.addEventListener('submit', async function(event) {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    // Convert checkbox value to true/false (now it's off by default)
     data.ignoreUsed = data.ignoreUsed === 'on';
 
     if (data.targets) {

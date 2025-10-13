@@ -45,7 +45,7 @@ form {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Space between label, input, and description */
+    gap: 8px;
 }
 
 label {
@@ -58,10 +58,10 @@ label {
     font-size: 13px;
     color: var(--tg-theme-hint-color);
     margin: 0;
-    padding-top: 4px; /* A little space above the description text */
+    padding-top: 4px;
 }
 
-/* This is the key change for full-width inputs */
+/* Key change for full-width inputs */
 input, select, textarea, .tagify {
     width: 100%;
     padding: 12px;
@@ -70,13 +70,13 @@ input, select, textarea, .tagify {
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);
     font-size: 16px;
-    box-sizing: border-box; /* Important: ensures padding doesn't break width */
+    box-sizing: border-box;
 }
 
 /* --- TAGIFY STYLES --- */
 .tagify {
-    padding: 0; /* Tagify has its own internal padding */
-    margin-top: 5px; /* Space below the label */
+    padding: 0;
+    margin-top: 5px;
 }
 .tagify__input {
     padding: 12px;
@@ -92,7 +92,7 @@ input, select, textarea, .tagify {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 5px; /* Add space above the slider row */
+    padding-top: 5px;
 }
 .switch-container span {
     color: var(--tg-theme-text-color);
