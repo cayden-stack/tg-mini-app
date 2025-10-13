@@ -8,13 +8,11 @@ const feedback = document.getElementById('feedback');
 const submitButton = document.getElementById('submit-button');
 const tabs = document.querySelectorAll('.tab');
 const modeInput = document.getElementById('mode-input');
-
-// NEW: Get individual sections
 const locationSection = document.getElementById('location-section');
 const universityCountSection = document.getElementById('university-count-section');
 const directoryScrapeOptions = document.getElementById('directory-scrape-options');
 const urlScrapeOptions = document.getElementById('url-scrape-options');
-
+const optionsSection = document.getElementById('options-section'); // <-- New line
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
@@ -57,12 +55,15 @@ function updateFormVisibility() {
     universityCountSection.style.display = 'none';
     directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
+    optionsSection.style.display = 'none'; // <-- New line
 
     // Then, show only the sections we need for the current mode
     if (currentMode === 'full' || currentMode === 'directory') {
         locationSection.style.display = 'flex';
         universityCountSection.style.display = 'flex';
+        optionsSection.style.display = 'flex'; // <-- New line
     }
+    
     if (currentMode === 'directory') {
         directoryScrapeOptions.style.display = 'flex';
     } else if (currentMode === 'url') {
