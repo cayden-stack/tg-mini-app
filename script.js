@@ -1,4 +1,4 @@
-const N8N_WEBHOOK_URL = 'https://primary-production-f30d.up.railway.app/webhook-test/245f13ae-4567-4aa6-aa19-d9f96f89352a';
+const N8N_WEBHOOK_URL = 'https://primary-production-f30d.up.railway.app/webhook/245f13ae-4567-4aa6-aa19-d9f96f89352a';
 const tg = window.Telegram.WebApp;
 tg.ready();
 
