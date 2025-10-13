@@ -58,10 +58,9 @@ label {
     font-size: 13px;
     color: var(--tg-theme-hint-color);
     margin: 0;
-    padding-top: 4px;
 }
 
-/* Key change for full-width inputs */
+/* This is the key change for full-width inputs */
 input, select, textarea, .tagify {
     width: 100%;
     padding: 12px;
@@ -70,16 +69,18 @@ input, select, textarea, .tagify {
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);
     font-size: 16px;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Important: ensures padding doesn't break width */
 }
 
 /* --- TAGIFY STYLES --- */
 .tagify {
-    padding: 0;
-    margin-top: 5px;
+    padding: 0; /* Tagify has its own internal padding */
+    margin-top: 5px; /* Space below the label */
 }
+/* This specifically fixes the black text bug */
 .tagify__input {
     padding: 12px;
+    color: var(--tg-theme-text-color) !important; 
 }
 .tagify__tag {
     --tag-bg: var(--tg-theme-button-color);
@@ -92,17 +93,18 @@ input, select, textarea, .tagify {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 5px;
+    padding-top: 10px; /* Add space above the slider row */
 }
 .switch-container span {
     color: var(--tg-theme-text-color);
-    font-weight: bold;
+    font-size: 16px; /* Match the label font size */
 }
 .switch {
     position: relative;
     display: inline-block;
     width: 50px;
     height: 28px;
+    flex-shrink: 0; /* Prevents the switch from shrinking */
 }
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider {

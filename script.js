@@ -8,9 +8,13 @@ const feedback = document.getElementById('feedback');
 const submitButton = document.getElementById('submit-button');
 const tabs = document.querySelectorAll('.tab');
 const modeInput = document.getElementById('mode-input');
-const commonOptions = document.getElementById('common-options');
+
+// NEW: Get individual sections
+const locationSection = document.getElementById('location-section');
+const universityCountSection = document.getElementById('university-count-section');
 const directoryScrapeOptions = document.getElementById('directory-scrape-options');
 const urlScrapeOptions = document.getElementById('url-scrape-options');
+
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
@@ -48,16 +52,18 @@ tagify.on('add', validateForm).on('remove', validateForm);
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
-    // First, hide everything
-    commonOptions.style.display = 'none';
+    // First, hide all optional sections
+    locationSection.style.display = 'none';
+    universityCountSection.style.display = 'none';
     directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
 
     // Then, show only the sections we need for the current mode
-    if (currentMode === 'full') {
-        commonOptions.style.display = 'flex';
-    } else if (currentMode === 'directory') {
-        commonOptions.style.display = 'flex';
+    if (currentMode === 'full' || currentMode === 'directory') {
+        locationSection.style.display = 'flex';
+        universityCountSection.style.display = 'flex';
+    }
+    if (currentMode === 'directory') {
         directoryScrapeOptions.style.display = 'flex';
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
