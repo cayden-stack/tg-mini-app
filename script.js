@@ -1,4 +1,4 @@
-const N8N_WEBHOOK_URL = 'https://primary-production-f30d.up.railway.app/webhook/245f13ae-4567-4aa6-aa19-d9f96f89352a';
+const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
 const tg = window.Telegram.WebApp;
 tg.ready();
 
@@ -8,8 +8,8 @@ const feedback = document.getElementById('feedback');
 const submitButton = document.getElementById('submit-button');
 const tabs = document.querySelectorAll('.tab');
 const modeInput = document.getElementById('mode-input');
-const locationOptions = document.getElementById('location-options');
-const targetedScrapeOptions = document.getElementById('targeted-scrape-options');
+const commonOptions = document.getElementById('common-options');
+const directoryScrapeOptions = document.getElementById('directory-scrape-options');
 const urlScrapeOptions = document.getElementById('url-scrape-options');
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
@@ -24,14 +24,14 @@ function validateForm() {
     const currentMode = modeInput.value;
     let isValid = false;
 
-    if (currentMode === 'full' || currentMode === 'directory') {
-        if (locationInput.value.trim() !== '' && countInput.value.trim() !== '') {
-            isValid = true;
-        }
+    if (currentMode === 'full') {
+        isValid = locationInput.value.trim() !== '' && countInput.value.trim() !== '';
+    } else if (currentMode === 'directory') {
+        const hasCommon = locationInput.value.trim() !== '' && countInput.value.trim() !== '';
+        const hasTags = tagify.value && tagify.value.length > 0;
+        isValid = hasCommon && hasTags;
     } else if (currentMode === 'url') {
-        if (urlsInput.value.trim() !== '') {
-            isValid = true;
-        }
+        isValid = urlsInput.value.trim() !== '';
     }
     
     submitButton.disabled = !isValid;
@@ -48,15 +48,15 @@ tagify.on('add', validateForm).on('remove', validateForm);
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
-    locationOptions.style.display = 'none';
-    targetedScrapeOptions.style.display = 'none';
+    commonOptions.style.display = 'none';
+    directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
 
     if (currentMode === 'full' || currentMode === 'directory') {
-        locationOptions.style.display = 'flex';
+        commonOptions.style.display = 'flex';
     }
     if (currentMode === 'directory') {
-        targetedScrapeOptions.style.display = 'flex';
+        directoryScrapeOptions.style.display = 'flex';
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
     }
@@ -87,7 +87,7 @@ updateFormVisibility();
 // --- Final Form Submission Logic ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
-    submitButton.disabled = true; // Disable button on submit
+    submitButton.disabled = true;
     feedback.textContent = 'Sending data to ALFRED...';
 
     const formData = new FormData(form);
@@ -95,13 +95,11 @@ form.addEventListener('submit', async function(event) {
 
     data.ignoreUsed = data.ignoreUsed === 'on';
 
-    // Get the values from Tagify. It returns an array of objects.
-    // We'll convert it to a simple array of strings.
     if (data.targets) {
         try {
             data.targets = JSON.parse(data.targets).map(tag => tag.value);
         } catch (e) {
-            data.targets = []; // Handle case where input is not valid JSON
+            data.targets = [];
         }
     }
 
@@ -116,13 +114,12 @@ form.addEventListener('submit', async function(event) {
             feedback.textContent = 'Success! ALFRED is on the job.';
             setTimeout(() => tg.close(), 1500);
         } else {
-            // New: Better Error Feedback
             const errorData = await response.json();
             feedback.textContent = `Error: ${errorData.message || 'Unknown error. Please try again.'}`;
-            submitButton.disabled = false; // Re-enable button on error
+            submitButton.disabled = false;
         }
     } catch (error) {
         feedback.textContent = 'Network error. Please check your connection.';
-        submitButton.disabled = false; // Re-enable button on error
+        submitButton.disabled = false;
     }
 });

@@ -8,40 +8,39 @@ body {
 h1 {
     text-align: center;
     font-size: 24px;
+    margin-top: 10px; /* Add space below the tabs */
     margin-bottom: 20px;
 }
 
+/* --- NEW TAB STYLES --- */
 .tabs {
     display: flex;
     width: 100%;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    overflow: hidden;
 }
 
 .tab {
     flex: 1;
-    padding: 12px;
+    padding: 10px 5px; /* Thinner padding */
+    font-size: 14px; /* Smaller text */
     text-align: center;
     cursor: pointer;
-    background-color: var(--tg-theme-secondary-bg-color);
-    color: var(--tg-theme-text-color);
-    border-bottom: 3px solid transparent;
-    transition: background-color 0.3s;
+    color: var(--tg-theme-hint-color);
+    border-bottom: 2px solid var(--tg-theme-secondary-bg-color);
+    transition: all 0.3s;
 }
 
 .tab.active {
-    background-color: var(--tg-theme-bg-color);
-    border-bottom: 3px solid var(--tg-theme-button-color);
+    color: var(--tg-theme-button-color);
+    border-bottom: 2px solid var(--tg-theme-button-color);
 }
+/* --- END OF NEW TAB STYLES --- */
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Reduced gap */
+    gap: 15px;
 }
 
-/* --- NEW BOXED SECTION STYLES --- */
 .form-section {
     background-color: var(--tg-theme-secondary-bg-color);
     border-radius: 10px;
@@ -62,7 +61,7 @@ label {
 }
 
 .description {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--tg-theme-hint-color);
     margin: 4px 0 0 0;
 }
@@ -71,14 +70,52 @@ input, select, textarea {
     width: 100%;
     padding: 10px;
     border-radius: 8px;
-    border: 1px solid var(--tg-theme-bg-color);
+    border: none; /* Removed border to match BotFather style */
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);
     font-size: 16px;
     box-sizing: border-box;
 }
 
-/* --- NEW SLIDER STYLES (MATCHING BOTFATHER) --- */
+/* --- NEW STYLES FOR LEFT/RIGHT ALIGNED FIELDS --- */
+.field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+.label-column {
+    flex-grow: 1;
+}
+.input-column {
+    flex-shrink: 0;
+    width: 120px;
+}
+.input-column input {
+    text-align: right;
+}
+
+/* --- NEW TAGIFY STYLES --- */
+.tagify {
+    --tags-border-color: var(--tg-theme-bg-color);
+    --tags-bg: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    margin-top: 5px;
+    padding: 0; /* Remove default padding */
+    border: none; /* Remove border */
+}
+.tagify__input {
+    color: var(--tg-theme-text-color);
+    padding: 10px; /* Add padding to match other inputs */
+}
+.tagify__tag {
+    --tag-bg: var(--tg-theme-button-color);
+    --tag-text-color: var(--tg-theme-button-text-color);
+    --tag-remove-btn-color: var(--tg-theme-button-text-color);
+}
+
+
+/* --- SLIDER STYLES --- */
 .switch-group {
     display: flex;
     flex-direction: column;
@@ -89,7 +126,7 @@ input, select, textarea {
     justify-content: space-between;
     align-items: center;
 }
-.switch-container span { /* The label text for the switch */
+.switch-container span {
     color: var(--tg-theme-text-color);
 }
 .switch {
@@ -123,22 +160,6 @@ input, select, textarea {
 }
 input:checked + .slider { background-color: var(--tg-theme-button-color); }
 input:checked + .slider:before { transform: translateX(22px); }
-
-/* --- TAGIFY STYLES --- */
-.tagify {
-    --tags-border-color: var(--tg-theme-bg-color);
-    --tags-bg: var(--tg-theme-bg-color);
-    --tags-hover-border-color: var(--tg-theme-button-color);
-    width: 100%;
-}
-.tagify__input {
-    color: var(--tg-theme-text-color);
-}
-.tagify__tag {
-    --tag-bg: var(--tg-theme-button-color);
-    --tag-text-color: var(--tg-theme-button-text-color);
-    --tag-remove-btn-color: var(--tg-theme-button-text-color);
-}
 
 /* --- BUTTON STYLES --- */
 button {
