@@ -1,4 +1,4 @@
-const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
+const N8N_WEBHOOK_URL = 'https://primary-production-f30d.up.railway.app/webhook-test/245f13ae-4567-4aa6-aa19-d9f96f89352a';
 const tg = window.Telegram.WebApp;
 tg.ready();
 
@@ -97,6 +97,7 @@ updateFormVisibility();
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...'; // <-- ADD THIS LINE
     feedback.textContent = 'Sending data to ALFRED...';
 
     const formData = new FormData(form);
