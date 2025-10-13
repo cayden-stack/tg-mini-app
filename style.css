@@ -8,11 +8,10 @@ body {
 h1 {
     text-align: center;
     font-size: 24px;
-    margin-top: 10px; /* Add space below the tabs */
+    margin-top: 10px;
     margin-bottom: 20px;
 }
 
-/* --- NEW TAB STYLES --- */
 .tabs {
     display: flex;
     width: 100%;
@@ -20,8 +19,8 @@ h1 {
 
 .tab {
     flex: 1;
-    padding: 10px 5px; /* Thinner padding */
-    font-size: 14px; /* Smaller text */
+    padding: 10px 5px;
+    font-size: 14px;
     text-align: center;
     cursor: pointer;
     color: var(--tg-theme-hint-color);
@@ -33,7 +32,6 @@ h1 {
     color: var(--tg-theme-button-color);
     border-bottom: 2px solid var(--tg-theme-button-color);
 }
-/* --- END OF NEW TAB STYLES --- */
 
 form {
     display: flex;
@@ -47,11 +45,7 @@ form {
     padding: 15px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-}
-
-.label-container {
-    width: 100%;
+    gap: 8px; /* Space between label, input, and description */
 }
 
 label {
@@ -63,50 +57,29 @@ label {
 .description {
     font-size: 13px;
     color: var(--tg-theme-hint-color);
-    margin: 4px 0 0 0;
+    margin: 0;
+    padding-top: 4px; /* A little space above the description text */
 }
 
-input, select, textarea {
+/* This is the key change for full-width inputs */
+input, select, textarea, .tagify {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
-    border: none; /* Removed border to match BotFather style */
+    border: none;
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);
     font-size: 16px;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Important: ensures padding doesn't break width */
 }
 
-/* --- NEW STYLES FOR LEFT/RIGHT ALIGNED FIELDS --- */
-.field-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-}
-.label-column {
-    flex-grow: 1;
-}
-.input-column {
-    flex-shrink: 0;
-    width: 120px;
-}
-.input-column input {
-    text-align: right;
-}
-
-/* --- NEW TAGIFY STYLES --- */
+/* --- TAGIFY STYLES --- */
 .tagify {
-    --tags-border-color: var(--tg-theme-bg-color);
-    --tags-bg: var(--tg-theme-bg-color);
-    color: var(--tg-theme-text-color);
-    margin-top: 5px;
-    padding: 0; /* Remove default padding */
-    border: none; /* Remove border */
+    padding: 0; /* Tagify has its own internal padding */
+    margin-top: 5px; /* Space below the label */
 }
 .tagify__input {
-    color: var(--tg-theme-text-color);
-    padding: 10px; /* Add padding to match other inputs */
+    padding: 12px;
 }
 .tagify__tag {
     --tag-bg: var(--tg-theme-button-color);
@@ -114,20 +87,16 @@ input, select, textarea {
     --tag-remove-btn-color: var(--tg-theme-button-text-color);
 }
 
-
 /* --- SLIDER STYLES --- */
-.switch-group {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
 .switch-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-top: 5px; /* Add space above the slider row */
 }
 .switch-container span {
     color: var(--tg-theme-text-color);
+    font-weight: bold;
 }
 .switch {
     position: relative;

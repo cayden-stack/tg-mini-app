@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scraper Control</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
-    
+    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text-css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -24,58 +23,42 @@
 
         <div id="common-options">
             <div class="form-section">
-                <div class="field-row">
-                    <div class="label-column">
-                        <label for="location">Location</label>
-                        <p class="description">The geographical area to search for.</p>
-                    </div>
-                    <div class="input-column">
-                        <input type="text" id="location" name="location" placeholder="e.g., California" required>
-                    </div>
-                </div>
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" placeholder="e.g., California" required>
+                <p class="description">The geographical area to search for universities.</p>
             </div>
             <div class="form-section">
-                <div class="field-row">
-                    <div class="label-column">
-                        <label for="university-count">University Count</label>
-                        <p class="description">The maximum number of universities to find.</p>
-                    </div>
-                    <div class="input-column">
-                        <input type="number" id="university-count" name="count" min="1" placeholder="e.g., 10" required>
-                    </div>
-                </div>
+                <label for="university-count">University Count</label>
+                <input type="number" id="university-count" name="count" min="1" placeholder="e.g., 10" required>
+                <p class="description">The maximum number of universities to find.</p>
             </div>
         </div>
 
         <div id="directory-scrape-options" style="display: none;">
              <div class="form-section">
                 <label for="targets">Departments</label>
-                <p class="description">Type a department and press Enter to add it.</p>
                 <input type="text" id="targets" name="targets" placeholder="e.g., biology, chemistry">
+                <p class="description">Type a department and press Enter to add it.</p>
             </div>
         </div>
 
         <div id="url-scrape-options" style="display: none;">
             <div class="form-section">
                  <label for="urls">URLs to Scrape</label>
-                 <p class="description">Paste one URL per line.</p>
                 <textarea id="urls" name="urls" rows="5"></textarea>
+                <p class="description">Paste one URL per line.</p>
             </div>
         </div>
 
         <div class="form-section">
-            <div class="label-container">
-                <label>Options</label>
-                <p class="description">Configure the scraper's behavior.</p>
-            </div>
-            <div class="switch-group">
-                <div class="switch-container">
-                    <span>Ignore Used Universities</span>
-                    <label class="switch">
-                        <input type="checkbox" name="ignoreUsed">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            <label>Options</label>
+            <p class="description">Configure the scraper's behavior.</p>
+            <div class="switch-container">
+                <span>Ignore Used Universities</span>
+                <label class="switch">
+                    <input type="checkbox" name="ignoreUsed">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
