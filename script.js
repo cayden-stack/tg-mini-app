@@ -1,10 +1,8 @@
-const N8N_WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
 const tg = window.Telegram.WebApp;
 tg.ready();
 
 // --- Get all our HTML elements ---
 const form = document.getElementById('scraper-form');
-const feedback = document.getElementById('feedback');
 const submitButton = document.getElementById('submit-button');
 const tabs = document.querySelectorAll('.tab');
 const modeInput = document.getElementById('mode-input');
@@ -35,7 +33,7 @@ function validateForm() {
     } else if (currentMode === 'url') {
         isValid = urlsInput.value.trim() !== '';
     }
-    
+
     submitButton.disabled = !isValid;
 }
 
@@ -45,25 +43,22 @@ function validateForm() {
 });
 tagify.on('add', validateForm).on('remove', validateForm);
 
-
-// --- Tab and Visibility Logic (CORRECTED) ---
+// --- Tab and Visibility Logic ---
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
-    // First, hide all optional sections
     locationSection.style.display = 'none';
     universityCountSection.style.display = 'none';
     directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
     optionsSection.style.display = 'none';
 
-    // Then, show only the sections we need for the current mode
     if (currentMode === 'full' || currentMode === 'directory') {
         locationSection.style.display = 'flex';
         universityCountSection.style.display = 'flex';
         optionsSection.style.display = 'flex';
     }
-    
+
     if (currentMode === 'directory') {
         directoryScrapeOptions.style.display = 'flex';
     } else if (currentMode === 'url') {
@@ -92,17 +87,14 @@ tabs.forEach(tab => {
 // --- Run on page load ---
 updateFormVisibility();
 
-
-// --- Final Form Submission Logic ---
-form.addEventListener('submit', async function(event) {
+// --- Final Form Submission Logic (Using tg.sendData) ---
+form.addEventListener('submit', function(event) {
     event.preventDefault();
-    submitButton.disabled = true;
-    submitButton.textContent = 'Submitting...';
-    feedback.textContent = 'Sending data to ALFRED...';
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
+    // Convert checkbox value to true/false
     data.ignoreUsed = data.ignoreUsed === 'on';
 
     if (data.targets) {
@@ -113,23 +105,7 @@ form.addEventListener('submit', async function(event) {
         }
     }
 
-    try {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-            feedback.textContent = 'Success! ALFRED is on the job.';
-            setTimeout(() => tg.close(), 1500);
-        } else {
-            const errorData = await response.json();
-            feedback.textContent = `Error: ${errorData.message || 'Unknown error. Please try again.'}`;
-            submitButton.disabled = false;
-        }
-    } catch (error) {
-        feedback.textContent = 'Network error. Please check your connection.';
-        submitButton.disabled = false;
-    }
+    // Send the data directly to the bot and close the app
+    tg.sendData(JSON.stringify(data));
+    tg.close();
 });
