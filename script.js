@@ -33,7 +33,7 @@ function validateForm() {
     } else if (currentMode === 'url') {
         isValid = urlsInput.value.trim() !== '';
     }
-
+    
     submitButton.disabled = !isValid;
 }
 
@@ -43,22 +43,24 @@ function validateForm() {
 });
 tagify.on('add', validateForm).on('remove', validateForm);
 
-// --- Tab and Visibility Logic ---
+// --- Tab and Visibility Logic (CORRECTED) ---
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
+    // First, hide all optional sections
     locationSection.style.display = 'none';
     universityCountSection.style.display = 'none';
     directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
     optionsSection.style.display = 'none';
 
+    // Then, show only the sections we need for the current mode
     if (currentMode === 'full' || currentMode === 'directory') {
         locationSection.style.display = 'flex';
         universityCountSection.style.display = 'flex';
         optionsSection.style.display = 'flex';
     }
-
+    
     if (currentMode === 'directory') {
         directoryScrapeOptions.style.display = 'flex';
     } else if (currentMode === 'url') {
@@ -87,7 +89,7 @@ tabs.forEach(tab => {
 // --- Run on page load ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic (Using tg.sendData) ---
+// --- Final Form Submission Logic ---
 form.addEventListener('submit', function(event) {
     event.preventDefault();
 
