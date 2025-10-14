@@ -1,11 +1,14 @@
+// This should be the webhook URL from your Pipedream workflow
+const PIPEDREAM_WEBHOOK_URL = 'https://eo9iczuzcub5ams.m.pipedream.net';
+
 const tg = window.Telegram.WebApp;
 tg.ready();
 
 // --- Get all our HTML elements ---
 const form = document.getElementById('scraper-form');
-// ... (rest of your getElementById lines are the same)
 const submitButton = document.getElementById('submit-button');
 const tabs = document.querySelectorAll('.tab');
+// ... (rest of your getElementById lines are the same)
 const modeInput = document.getElementById('mode-input');
 const locationSection = document.getElementById('location-section');
 const universityCountSection = document.getElementById('university-count-section');
@@ -17,11 +20,10 @@ const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
 const urlsInput = document.getElementById('urls');
 
-
-// --- Initialize Tagify for the department input ---
+// --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
 
-// --- Form Validation & Button Disabling Logic ---
+// --- Form Validation Logic ---
 function validateForm() {
     // ... (this function is the same)
     const currentMode = modeInput.value;
@@ -45,7 +47,6 @@ function validateForm() {
     input.addEventListener('input', validateForm);
 });
 tagify.on('add', validateForm).on('remove', validateForm);
-
 
 // --- Tab and Visibility Logic ---
 function updateFormVisibility() {
@@ -92,12 +93,11 @@ tabs.forEach(tab => {
 
 updateFormVisibility();
 
-// --- Final Form Submission Logic (WITH DEBUGGING ALERTS) ---
-form.addEventListener('submit', function(event) {
+// --- Final Form Submission Logic (Using fetch to Pipedream) ---
+form.addEventListener('submit', async function(event) {
     event.preventDefault();
-    
-    // --- CHECKPOINT 1 ---
-    alert("Submit button clicked! The script is running.");
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
 
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
@@ -112,16 +112,23 @@ form.addEventListener('submit', function(event) {
         }
     }
 
-    // --- CHECKPOINT 2 ---
-    alert("Data collected:\n" + JSON.stringify(data, null, 2));
-
     try {
-        // --- CHECKPOINT 3 ---
-        alert("About to send data to Telegram...");
-        tg.sendData(JSON.stringify(data));
-        tg.close();
+        const response = await fetch(PIPEDREAM_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            // No need for tg.close() here, Pipedream handles the response
+            // We can give the user feedback and then the app will close itself if configured
+        } else {
+            const errorData = await response.json();
+            submitButton.disabled = false;
+            submitButton.textContent = 'Start Scrape';
+        }
     } catch (error) {
-        // --- CHECKPOINT 4 (Error) ---
-        alert("An error occurred trying to send data: " + error.message);
+        submitButton.disabled = false;
+        submitButton.textContent = 'Start Scrape';
     }
 });
