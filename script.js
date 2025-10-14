@@ -102,6 +102,8 @@ form.addEventListener('submit', async function(event) {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
+    data.user = tg.initDataUnsafe.user;
+
     data.ignoreUsed = data.ignoreUsed === 'on';
 
     if (data.targets) {
