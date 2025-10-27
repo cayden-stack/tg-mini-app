@@ -7,8 +7,7 @@ tg.ready();
 // --- Get all our HTML elements ---
 const form = document.getElementById('scraper-form');
 const submitButton = document.getElementById('submit-button');
-const tabs = document.querySelectorAll('.tab');
-// ... (rest of your getElementById lines are the same)
+const segments = document.querySelectorAll('.segment');
 const modeInput = document.getElementById('mode-input');
 const locationSection = document.getElementById('location-section');
 const universityCountSection = document.getElementById('university-count-section');
@@ -19,13 +18,13 @@ const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
 const urlsInput = document.getElementById('urls');
+const accordionHeaders = document.querySelectorAll('.accordion-header');
 
 // --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
 
 // --- Form Validation Logic ---
 function validateForm() {
-    // ... (this function is the same)
     const currentMode = modeInput.value;
     let isValid = false;
 
@@ -42,15 +41,14 @@ function validateForm() {
     submitButton.disabled = !isValid;
 }
 
-// ... (the event listeners are the same)
 [locationInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
 });
 tagify.on('add', validateForm).on('remove', validateForm);
 
+
 // --- Tab and Visibility Logic ---
 function updateFormVisibility() {
-    // ... (this function is the same)
     const currentMode = modeInput.value;
 
     locationSection.style.display = 'none';
@@ -74,26 +72,44 @@ function updateFormVisibility() {
     validateForm();
 }
 
-// ... (the tab click logic is the same)
-tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
+// --- Segmented Control Click Logic ---
+segments.forEach(segment => {
+    segment.addEventListener('click', () => {
+        segments.forEach(s => s.classList.remove('active'));
+        segment.classList.add('active');
 
-        const modeMap = {
-            'tab-full': 'full',
-            'tab-directory': 'directory',
-            'tab-url': 'url'
-        };
-        modeInput.value = modeMap[tab.id];
-
+        if (segment.id === 'btn-full') {
+            modeInput.value = 'full';
+        } else if (segment.id === 'btn-directory') {
+            modeInput.value = 'directory';
+        } else if (segment.id === 'btn-url') {
+            modeInput.value = 'url';
+        }
         updateFormVisibility();
     });
 });
 
+// --- Accordion Click Logic ---
+accordionHeaders.forEach(header => {
+    header.addEventListener('click', () => {
+        header.classList.toggle('active');
+        const content = header.nextElementSibling;
+        const chevron = header.querySelector('.chevron');
+
+        if (content.style.display === "flex") {
+            content.style.display = "none";
+            if (chevron) chevron.textContent = '>';
+        } else {
+            content.style.display = "flex";
+            if (chevron) chevron.textContent = 'v';
+        }
+    });
+});
+
+// --- Run on page load ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic (Using fetch to Pipedream) ---
+// --- Final Form Submission Logic ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
@@ -104,7 +120,9 @@ form.addEventListener('submit', async function(event) {
 
     data.user = tg.initDataUnsafe.user;
 
+    // Convert all checkbox values to true/false
     data.ignoreUsed = data.ignoreUsed === 'on';
+    data.aiContactFilter = data.aiContactFilter === 'on';
 
     if (data.targets) {
         try {
@@ -122,8 +140,7 @@ form.addEventListener('submit', async function(event) {
         });
 
         if (response.ok) {
-            // No need for tg.close() here, Pipedream handles the response
-            // We can give the user feedback and then the app will close itself if configured
+            // Success
         } else {
             const errorData = await response.json();
             submitButton.disabled = false;
