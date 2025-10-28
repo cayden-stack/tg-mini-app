@@ -28,7 +28,7 @@ const optionsSection = document.getElementById('options-section');
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
-const urlsInput = document.getElementById('urls'); // This is now a <textarea>
+const urlsInput = document.getElementById('urls'); // This is now an <input type="text">
 const accordionHeaders = document.querySelectorAll('.accordion-header');
 
 // --- Initialize Tagify (ONLY for departments) ---
@@ -53,7 +53,7 @@ function validateForm() {
 }
 
 // --- Event Listeners (UPDATED) ---
-// Now we listen to the 'paste' event on the textarea as well
+// Now we listen to the 'paste' event on all 3 inputs
 [locationInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
     input.addEventListener('paste', validateForm);
@@ -154,12 +154,11 @@ form.addEventListener('submit', async function(event) {
             data.targets = [];
         }
 
-        // --- FIX #4: Parse 'urls' from the <textarea> ---
-        // Split the string by new lines, trim whitespace, and filter out empty lines
+        // --- FIX #4: Parse 'urls' from the <input> ---
+        // It's now just a single string, but we'll send it as an array
+        // to keep the n8n workflow consistent.
         if (data.urls && typeof data.urls === 'string') {
-            data.urls = data.urls.split('\n')
-                                 .map(url => url.trim())
-                                 .filter(url => url.length > 0);
+            data.urls = [data.urls.trim()]; // Put the single URL into an array
         } else {
             data.urls = [];
         }
