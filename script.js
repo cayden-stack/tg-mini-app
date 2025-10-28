@@ -1,9 +1,7 @@
 // This should be the webhook URL from your Pipedream workflow
 const PIPEDREAM_WEBHOOK_URL = 'https://eo9iczuzcub5ams.m.pipedream.net';
 
-// --- THIS IS THE FIX ---
-// Check if the Telegram object exists. If not, create a "fake" one
-// for local testing and direct link access.
+// This mock object is for local testing. It won't run inside Telegram.
 if (window.Telegram === undefined) {
   window.Telegram = {
     WebApp: {
@@ -13,7 +11,6 @@ if (window.Telegram === undefined) {
     }
   };
 }
-// --- END OF FIX ---
 
 const tg = window.Telegram.WebApp;
 tg.ready();
@@ -31,12 +28,12 @@ const optionsSection = document.getElementById('options-section');
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
-const urlsInput = document.getElementById('urls');
+const urlsInput = document.getElementById('urls'); // This is now an <input>
 const accordionHeaders = document.querySelectorAll('.accordion-header');
 
 // --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
-var urlsTagify = new Tagify(urlsInput);
+var tagifyUrls = new Tagify(urlsInput); // <-- FIX #1: Initialize Tagify for the URL input
 
 // --- Form Validation Logic ---
 function validateForm() {
@@ -50,18 +47,22 @@ function validateForm() {
         const hasTags = tagify.value && tagify.value.length > 0;
         isValid = hasCommon && hasTags;
     } else if (currentMode === 'url') {
-        isValid = urlsInput.value.trim() !== '';
+        isValid = tagifyUrls.value.length > 0; // <-- FIX #2: Check the Tagify value
     }
     
     submitButton.disabled = !isValid;
 }
 
-// --- FIX #2: Listen for 'paste' event ---
-[locationInput, countInput, urlsInput].forEach(input => {
+// --- FIX #3: Update Event Listeners ---
+// Removed urlsInput from this list
+[locationInput, countInput].forEach(input => {
     input.addEventListener('input', validateForm);
-    input.addEventListener('paste', validateForm); // Ensures pasting also validates
+    input.addEventListener('paste', validateForm);
 });
+// Add listeners for both Tagify instances
 tagify.on('add', validateForm).on('remove', validateForm);
+tagifyUrls.on('add', validateForm).on('remove', validateForm);
+// --- END OF FIX #3 ---
 
 
 // --- Tab and Visibility Logic (Unchanged) ---
@@ -126,29 +127,26 @@ accordionHeaders.forEach(header => {
 // --- Run on page load (Unchanged) ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic (FIXED) ---
+// --- Final Form Submission Logic ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
     submitButton.textContent = 'Submitting...';
 
-    // Wrap the data preparation in a try...catch
     try {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
 
-        // --- THIS IS THE FIX ---
-        // Safely get user data, or provide a default if it doesn't exist
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             data.user = tg.initDataUnsafe.user;
         } else {
-            data.user = { id: 0, first_name: "Web User" }; // Provide a default
+            data.user = { id: 0, first_name: "Web User" };
         }
-        // --- END OF FIX ---
 
         data.ignoreUsed = data.ignoreUsed === 'on';
         data.aiContactFilter = data.aiContactFilter === 'on';
 
+        // Parse 'targets' (departments)
         if (data.targets && typeof data.targets === 'string') {
             try {
                 data.targets = JSON.parse(data.targets).map(tag => tag.value);
@@ -159,7 +157,18 @@ form.addEventListener('submit', async function(event) {
             data.targets = [];
         }
 
-        // Now, try to send the data
+        // --- FIX #4: Parse 'urls' from the new Tagify input ---
+        if (data.urls && typeof data.urls === 'string') {
+            try {
+                data.urls = JSON.parse(data.urls).map(tag => tag.value);
+            } catch (e) {
+                data.urls = [];
+            }
+        } else {
+            data.urls = [];
+        }
+        // --- END OF FIX #4 ---
+
         const response = await fetch(PIPEDREAM_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -172,9 +181,10 @@ form.addEventListener('submit', async function(event) {
             const errorData = await response.json();
             submitButton.disabled = false;
             submitButton.textContent = 'Start Scrape';
+            feedback.textContent = `Error: ${errorData.message || 'Submission failed.'}`;
         }
-    // This will catch any error, including the one from tg.initDataUnsafe
     } catch (error) { 
+        feedback.textContent = `A script error occurred: ${error.message}`;
         submitButton.disabled = false;
         submitButton.textContent = 'Start Scrape';
     }

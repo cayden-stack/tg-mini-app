@@ -44,12 +44,13 @@
                 <input type="text" id="targets" name="targets" placeholder="e.g., biology, chemistry">
                 <p class="description">Type a department and press Enter to add it.</p>
             </div>
+            
             <div id="url-scrape-options" class="form-section" style="display: none;">
                  <label for="urls">URLs to Scrape</label>
-                <input type="text" id="urls" name="urls" placeholder="e.g., https://example.com/page1">
+                 <input type="text" id="urls" name="urls" placeholder="Type or paste a URL and press Enter">
                 <p class="description">Type or paste a URL and press Enter to add it.</p>
             </div>
-        </div>
+            </div>
 
         <div class="accordion-header">
             <span>AI Settings</span>
@@ -58,39 +59,26 @@
         <div class="accordion-content">
             <div class="form-section">
                 <label for="ai-model">AI Model</label>
-                <p class="description">The default option is the most efficient option. Keep this option as default unless changing it for specific purposes.</p>
+                <p class="description">"Efficient" is default. "Top" models are slower and cost more.</p>
                 <select id="ai-model" name="aiModel">
-                    <option value="openai/gpt-5-mini">GPT-5 Mini (Default)</option>
-                    <option value="openai/gpt-5-pro">GPT-5 Pro</option>
-                    <option value="openai/gpt-4o">GPT-4o</option>
-		    <option value="openai/gpt-4.1">GPT-4.1</option>
-		    <option value="openai/gpt-5">GPT-5</option>
-                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-                    <option value="openai/gpt-4.1-mini">GPT-4.1 Mini</option>
-                    <option value="openai/gpt-4o-nano">GPT-4o Nano</option>
-                    <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
-		    <option value="openai/gpt-5-nano">GPT-5 Nano</option>
+                    <option value="efficient-default">Efficient (Default)</option>
+                    <option value="top-gpt">GPT-4o</option>
+                    <option value="top-claude">Claude 3 Opus</option>
                 </select>
             </div>
             <div class="form-section">
                 <label for="backup-ai-model">Backup AI Model</label>
                 <p class="description">Select a model to use if the primary one fails.</p>
                 <select id="backup-ai-model" name="backupAiModel">
-                    <option value="openai/gpt-4.1-mini">GPT-4.1 Mini (Default)</option>
-                    <option value="openai/gpt-5-pro">GPT-5 Pro</option>
-                    <option value="openai/gpt-4o">GPT-4o</option>
-		    <option value="openai/gpt-4.1">GPT-4.1</option>
-		    <option value="openai/gpt-5">GPT-5</option>
-                    <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
-                    <option value="openai/gpt-5-mini">GPT-5 Mini</option>
-                    <option value="openai/gpt-4o-nano">GPT-4o Nano</option>
-                    <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
-		    <option value="openai/gpt-5-nano">GPT-5 Nano</option>
+                    <option value="none">None (Default)</option>
+                    <option value="efficient-default">Efficient</option>
+                    <option value="top-gpt">GPT-4o</option>
+                    <option value="top-claude">Claude 3 Opus</option>
                 </select>
             </div>
             <div class="form-section">
                 <label>AI Filtering</label>
-		<p class="description">Automatically filter contacts using an AI model.</p>
+                <p class="description">Automatically filter contacts using an AI model.</p>
                 <div class="switch-container">
                     <span>Auto-Filter Contacts</span>
                     <label class="switch">
