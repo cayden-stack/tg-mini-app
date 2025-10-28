@@ -8,7 +8,7 @@ tg.ready();
 const form = document.getElementById('scraper-form');
 // ... (rest of your getElementById lines are the same)
 const submitButton = document.getElementById('submit-button');
-const segments = document.querySelectorAll('.segment'); 
+const segments = document.querySelectorAll('.segment');
 const modeInput = document.getElementById('mode-input');
 const locationSection = document.getElementById('location-section');
 const universityCountSection = document.getElementById('university-count-section');
@@ -20,7 +20,6 @@ const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
 const urlsInput = document.getElementById('urls');
 const accordionHeaders = document.querySelectorAll('.accordion-header');
-
 
 // --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
@@ -75,16 +74,16 @@ function updateFormVisibility() {
 }
 
 // --- Segmented Control Click Logic (Unchanged) ---
-segments.forEach(segment => { 
+segments.forEach(segment => {
     segment.addEventListener('click', () => {
-        segments.forEach(s => s.classList.remove('active')); 
-        segment.classList.add('active'); 
+        segments.forEach(s => s.classList.remove('active'));
+        segment.classList.add('active');
 
-        if (segment.id === 'btn-full') { 
+        if (segment.id === 'btn-full') {
             modeInput.value = 'full';
-        } else if (segment.id === 'btn-directory') { 
+        } else if (segment.id === 'btn-directory') {
             modeInput.value = 'directory';
-        } else if (segment.id === 'btn-url') { 
+        } else if (segment.id === 'btn-url') {
             modeInput.value = 'url';
         }
         updateFormVisibility();
@@ -117,30 +116,35 @@ form.addEventListener('submit', async function(event) {
     submitButton.disabled = true;
     submitButton.textContent = 'Submitting...';
 
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+    // Wrap the data preparation in a try...catch
+    try {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
 
-    // --- THIS IS THE FIX ---
-    // Safely get user data, or provide a default if it doesn't exist
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        data.user = tg.initDataUnsafe.user;
-    } else {
-        data.user = { id: 0, first_name: "Unknown User" }; // Provide a default
-    }
-    // --- END OF FIX ---
+        // --- THIS IS THE FIX ---
+        // Safely get user data, or provide a default if it doesn't exist
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            data.user = tg.initDataUnsafe.user;
+        } else {
+            data.user = { id: 0, first_name: "Web User" }; // Provide a default
+        }
+        // --- END OF FIX ---
 
-    data.ignoreUsed = data.ignoreUsed === 'on';
-    data.aiContactFilter = data.aiContactFilter === 'on';
+        data.ignoreUsed = data.ignoreUsed === 'on';
+        data.aiContactFilter = data.aiContactFilter === 'on';
 
-    if (data.targets) {
-        try {
-            data.targets = JSON.parse(data.targets).map(tag => tag.value);
-        } catch (e) {
+        // Safely parse targets only if the field exists
+        if (data.targets && typeof data.targets === 'string') {
+            try {
+                data.targets = JSON.parse(data.targets).map(tag => tag.value);
+            } catch (e) {
+                data.targets = []; // Default to empty array if parsing fails
+            }
+        } else {
             data.targets = [];
         }
-    }
 
-    try {
+        // Now, try to send the data
         const response = await fetch(PIPEDREAM_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -154,12 +158,12 @@ form.addEventListener('submit', async function(event) {
             const errorData = await response.json();
             submitButton.disabled = false;
             submitButton.textContent = 'Start Scrape';
-            // You can also add a feedback message here:
-            // feedback.textContent = `Error: ${errorData.message}`;
+            feedback.textContent = `Error: ${errorData.message || 'Submission failed.'}`;
         }
-    } catch (error) {
+    // This will catch any error, including the one from tg.initDataUnsafe
+    } catch (error) { 
+        feedback.textContent = `A script error occurred: ${error.message}`;
         submitButton.disabled = false;
         submitButton.textContent = 'Start Scrape';
-         // feedback.textContent = `Network Error: ${error.message}`;
     }
 });
