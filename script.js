@@ -36,6 +36,7 @@ const accordionHeaders = document.querySelectorAll('.accordion-header');
 
 // --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
+var urlsTagify = new Tagify(urlsInput);
 
 // --- Form Validation Logic ---
 function validateForm() {
