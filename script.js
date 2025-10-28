@@ -6,8 +6,9 @@ tg.ready();
 
 // --- Get all our HTML elements ---
 const form = document.getElementById('scraper-form');
+// ... (rest of your getElementById lines are the same)
 const submitButton = document.getElementById('submit-button');
-const segments = document.querySelectorAll('.segment');
+const segments = document.querySelectorAll('.segment'); 
 const modeInput = document.getElementById('mode-input');
 const locationSection = document.getElementById('location-section');
 const universityCountSection = document.getElementById('university-count-section');
@@ -20,10 +21,11 @@ const targetsInput = document.getElementById('targets');
 const urlsInput = document.getElementById('urls');
 const accordionHeaders = document.querySelectorAll('.accordion-header');
 
+
 // --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
 
-// --- Form Validation Logic ---
+// --- Form Validation Logic (Unchanged) ---
 function validateForm() {
     const currentMode = modeInput.value;
     let isValid = false;
@@ -47,7 +49,7 @@ function validateForm() {
 tagify.on('add', validateForm).on('remove', validateForm);
 
 
-// --- Tab and Visibility Logic ---
+// --- Tab and Visibility Logic (Unchanged) ---
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
@@ -72,24 +74,24 @@ function updateFormVisibility() {
     validateForm();
 }
 
-// --- Segmented Control Click Logic ---
-segments.forEach(segment => {
+// --- Segmented Control Click Logic (Unchanged) ---
+segments.forEach(segment => { 
     segment.addEventListener('click', () => {
-        segments.forEach(s => s.classList.remove('active'));
-        segment.classList.add('active');
+        segments.forEach(s => s.classList.remove('active')); 
+        segment.classList.add('active'); 
 
-        if (segment.id === 'btn-full') {
+        if (segment.id === 'btn-full') { 
             modeInput.value = 'full';
-        } else if (segment.id === 'btn-directory') {
+        } else if (segment.id === 'btn-directory') { 
             modeInput.value = 'directory';
-        } else if (segment.id === 'btn-url') {
+        } else if (segment.id === 'btn-url') { 
             modeInput.value = 'url';
         }
         updateFormVisibility();
     });
 });
 
-// --- Accordion Click Logic ---
+// --- Accordion Click Logic (Unchanged) ---
 accordionHeaders.forEach(header => {
     header.addEventListener('click', () => {
         header.classList.toggle('active');
@@ -106,10 +108,10 @@ accordionHeaders.forEach(header => {
     });
 });
 
-// --- Run on page load ---
+// --- Run on page load (Unchanged) ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic ---
+// --- Final Form Submission Logic (THIS PART IS FIXED) ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
@@ -118,9 +120,15 @@ form.addEventListener('submit', async function(event) {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    data.user = tg.initDataUnsafe.user;
+    // --- THIS IS THE FIX ---
+    // Safely get user data, or provide a default if it doesn't exist
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        data.user = tg.initDataUnsafe.user;
+    } else {
+        data.user = { id: 0, first_name: "Unknown User" }; // Provide a default
+    }
+    // --- END OF FIX ---
 
-    // Convert all checkbox values to true/false
     data.ignoreUsed = data.ignoreUsed === 'on';
     data.aiContactFilter = data.aiContactFilter === 'on';
 
@@ -140,14 +148,18 @@ form.addEventListener('submit', async function(event) {
         });
 
         if (response.ok) {
-            // Success
+            // Success! We can now tell Telegram to close the app.
+            tg.close();
         } else {
             const errorData = await response.json();
             submitButton.disabled = false;
             submitButton.textContent = 'Start Scrape';
+            // You can also add a feedback message here:
+            // feedback.textContent = `Error: ${errorData.message}`;
         }
     } catch (error) {
         submitButton.disabled = false;
         submitButton.textContent = 'Start Scrape';
+         // feedback.textContent = `Network Error: ${error.message}`;
     }
 });
