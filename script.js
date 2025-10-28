@@ -28,14 +28,13 @@ const optionsSection = document.getElementById('options-section');
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
-const urlsInput = document.getElementById('urls'); // This is now an <input>
+const urlsInput = document.getElementById('urls'); // This is now a <textarea>
 const accordionHeaders = document.querySelectorAll('.accordion-header');
 
-// --- Initialize Tagify ---
+// --- Initialize Tagify (ONLY for departments) ---
 var tagify = new Tagify(targetsInput);
-var tagifyUrls = new Tagify(urlsInput); // <-- FIX #1: Initialize Tagify for the URL input
 
-// --- Form Validation Logic ---
+// --- Form Validation Logic (UPDATED) ---
 function validateForm() {
     const currentMode = modeInput.value;
     let isValid = false;
@@ -47,22 +46,20 @@ function validateForm() {
         const hasTags = tagify.value && tagify.value.length > 0;
         isValid = hasCommon && hasTags;
     } else if (currentMode === 'url') {
-        isValid = tagifyUrls.value.length > 0; // <-- FIX #2: Check the Tagify value
+        isValid = urlsInput.value.trim() !== ''; // <-- Reverted to simple check
     }
     
     submitButton.disabled = !isValid;
 }
 
-// --- FIX #3: Update Event Listeners ---
-// Removed urlsInput from this list
-[locationInput, countInput].forEach(input => {
+// --- Event Listeners (UPDATED) ---
+// Now we listen to the 'paste' event on the textarea as well
+[locationInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
     input.addEventListener('paste', validateForm);
 });
-// Add listeners for both Tagify instances
+// Only one Tagify instance to listen to
 tagify.on('add', validateForm).on('remove', validateForm);
-tagifyUrls.on('add', validateForm).on('remove', validateForm);
-// --- END OF FIX #3 ---
 
 
 // --- Tab and Visibility Logic (Unchanged) ---
@@ -127,7 +124,7 @@ accordionHeaders.forEach(header => {
 // --- Run on page load (Unchanged) ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic ---
+// --- Final Form Submission Logic (UPDATED) ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
@@ -157,13 +154,12 @@ form.addEventListener('submit', async function(event) {
             data.targets = [];
         }
 
-        // --- FIX #4: Parse 'urls' from the new Tagify input ---
+        // --- FIX #4: Parse 'urls' from the <textarea> ---
+        // Split the string by new lines, trim whitespace, and filter out empty lines
         if (data.urls && typeof data.urls === 'string') {
-            try {
-                data.urls = JSON.parse(data.urls).map(tag => tag.value);
-            } catch (e) {
-                data.urls = [];
-            }
+            data.urls = data.urls.split('\n')
+                                 .map(url => url.trim())
+                                 .filter(url => url.length > 0);
         } else {
             data.urls = [];
         }
