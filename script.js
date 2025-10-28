@@ -1,12 +1,25 @@
 // This should be the webhook URL from your Pipedream workflow
 const PIPEDREAM_WEBHOOK_URL = 'https://eo9iczuzcub5ams.m.pipedream.net';
 
+// --- THIS IS THE FIX ---
+// Check if the Telegram object exists. If not, create a "fake" one
+// for local testing and direct link access.
+if (window.Telegram === undefined) {
+  window.Telegram = {
+    WebApp: {
+      ready: () => console.log("Telegram WebApp mock: Ready"),
+      initDataUnsafe: { user: { id: 123, first_name: "Test User" } },
+      close: () => console.log("Telegram WebApp mock: Close")
+    }
+  };
+}
+// --- END OF FIX ---
+
 const tg = window.Telegram.WebApp;
 tg.ready();
 
 // --- Get all our HTML elements ---
 const form = document.getElementById('scraper-form');
-// ... (rest of your getElementById lines are the same)
 const submitButton = document.getElementById('submit-button');
 const segments = document.querySelectorAll('.segment');
 const modeInput = document.getElementById('mode-input');
@@ -24,7 +37,7 @@ const accordionHeaders = document.querySelectorAll('.accordion-header');
 // --- Initialize Tagify ---
 var tagify = new Tagify(targetsInput);
 
-// --- Form Validation Logic (Unchanged) ---
+// --- Form Validation Logic ---
 function validateForm() {
     const currentMode = modeInput.value;
     let isValid = false;
@@ -42,8 +55,10 @@ function validateForm() {
     submitButton.disabled = !isValid;
 }
 
+// --- FIX #2: Listen for 'paste' event ---
 [locationInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
+    input.addEventListener('paste', validateForm); // Ensures pasting also validates
 });
 tagify.on('add', validateForm).on('remove', validateForm);
 
@@ -110,7 +125,7 @@ accordionHeaders.forEach(header => {
 // --- Run on page load (Unchanged) ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic (THIS PART IS FIXED) ---
+// --- Final Form Submission Logic (FIXED) ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
@@ -133,12 +148,11 @@ form.addEventListener('submit', async function(event) {
         data.ignoreUsed = data.ignoreUsed === 'on';
         data.aiContactFilter = data.aiContactFilter === 'on';
 
-        // Safely parse targets only if the field exists
         if (data.targets && typeof data.targets === 'string') {
             try {
                 data.targets = JSON.parse(data.targets).map(tag => tag.value);
             } catch (e) {
-                data.targets = []; // Default to empty array if parsing fails
+                data.targets = [];
             }
         } else {
             data.targets = [];
@@ -152,17 +166,14 @@ form.addEventListener('submit', async function(event) {
         });
 
         if (response.ok) {
-            // Success! We can now tell Telegram to close the app.
             tg.close();
         } else {
             const errorData = await response.json();
             submitButton.disabled = false;
             submitButton.textContent = 'Start Scrape';
-            feedback.textContent = `Error: ${errorData.message || 'Submission failed.'}`;
         }
     // This will catch any error, including the one from tg.initDataUnsafe
     } catch (error) { 
-        feedback.textContent = `A script error occurred: ${error.message}`;
         submitButton.disabled = false;
         submitButton.textContent = 'Start Scrape';
     }
