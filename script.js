@@ -28,13 +28,13 @@ const optionsSection = document.getElementById('options-section');
 const locationInput = document.getElementById('location');
 const countInput = document.getElementById('university-count');
 const targetsInput = document.getElementById('targets');
-const urlsInput = document.getElementById('urls'); // This is now a <textarea>
+const urlsInput = document.getElementById('urls');
 const accordionHeaders = document.querySelectorAll('.accordion-header');
 
 // --- Initialize Tagify (ONLY for departments) ---
 var tagify = new Tagify(targetsInput);
 
-// --- Form Validation Logic (UPDATED) ---
+// --- Form Validation Logic (Unchanged) ---
 function validateForm() {
     const currentMode = modeInput.value;
     let isValid = false;
@@ -46,42 +46,55 @@ function validateForm() {
         const hasTags = tagify.value && tagify.value.length > 0;
         isValid = hasCommon && hasTags;
     } else if (currentMode === 'url') {
-        isValid = urlsInput.value.trim() !== ''; // <-- Reverted to simple check
+        isValid = urlsInput.value.trim() !== '';
     }
     
     submitButton.disabled = !isValid;
 }
 
-// --- Event Listeners (UPDATED) ---
-// Now we listen to the 'paste' event on the textarea as well
+// --- Event Listeners (Unchanged) ---
 [locationInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
     input.addEventListener('paste', validateForm);
 });
-// Only one Tagify instance to listen to
 tagify.on('add', validateForm).on('remove', validateForm);
 
 
-// --- Tab and Visibility Logic (Unchanged) ---
+// --- Tab and Visibility Logic (THIS PART IS FIXED) ---
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
+    // First, hide all optional sections
     locationSection.style.display = 'none';
     universityCountSection.style.display = 'none';
     directoryScrapeOptions.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
     optionsSection.style.display = 'none';
 
+    // --- THIS IS THE FIX ---
+    // Set all inputs to NOT be required by default
+    locationInput.required = false;
+    countInput.required = false;
+    // (Tagify handles its own validation, so 'targets' is fine)
+    urlsInput.required = false;
+    // --- END OF FIX ---
+
+    // Now, show sections AND set 'required' for visible fields
     if (currentMode === 'full' || currentMode === 'directory') {
         locationSection.style.display = 'flex';
         universityCountSection.style.display = 'flex';
         optionsSection.style.display = 'flex';
+        
+        locationInput.required = true;
+        countInput.required = true;
     }
     
     if (currentMode === 'directory') {
         directoryScrapeOptions.style.display = 'flex';
+        // 'targets' (Tagify) validation is handled in validateForm()
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
+        urlsInput.required = true;
     }
 
     validateForm();
@@ -124,7 +137,7 @@ accordionHeaders.forEach(header => {
 // --- Run on page load (Unchanged) ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic (UPDATED) ---
+// --- Final Form Submission Logic (Unchanged) ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
@@ -143,7 +156,6 @@ form.addEventListener('submit', async function(event) {
         data.ignoreUsed = data.ignoreUsed === 'on';
         data.aiContactFilter = data.aiContactFilter === 'on';
 
-        // Parse 'targets' (departments)
         if (data.targets && typeof data.targets === 'string') {
             try {
                 data.targets = JSON.parse(data.targets).map(tag => tag.value);
@@ -154,8 +166,6 @@ form.addEventListener('submit', async function(event) {
             data.targets = [];
         }
 
-        // --- FIX #4: Parse 'urls' from the <textarea> ---
-        // Split the string by new lines, trim whitespace, and filter out empty lines
         if (data.urls && typeof data.urls === 'string') {
             data.urls = data.urls.split('\n')
                                  .map(url => url.trim())
@@ -163,7 +173,6 @@ form.addEventListener('submit', async function(event) {
         } else {
             data.urls = [];
         }
-        // --- END OF FIX #4 ---
 
         const response = await fetch(PIPEDREAM_WEBHOOK_URL, {
             method: 'POST',
