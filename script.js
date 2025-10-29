@@ -81,7 +81,7 @@ function validateForm() {
     
     if (currentMode === 'directory') {
         if (!universityFilterOn && !departmentFilterOn) {
-             targetingValid = false; // Require at least one filter
+             targetingValid = false; // Require at least one filter to be on
         }
         if (universityFilterOn && universityTagify.value.length === 0) {
             targetingValid = false; // Enabled but empty
@@ -109,7 +109,7 @@ function validateForm() {
     submitButton.disabled = !isValid;
 }
 
-// --- Event Listeners (UPDATED) ---
+// --- Event Listeners ---
 // Location inputs
 [locationCityInput, locationOtherInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
@@ -121,13 +121,9 @@ function validateForm() {
 // Tagify inputs
 departmentTagify.on('add', validateForm).on('remove', validateForm);
 universityTagify.on('add', validateForm).on('remove', validateForm);
-
-// Checkboxes: This is the single source of truth for checkbox changes.
+// Checkboxes
 [enableUniversityFilter, enableDepartmentFilter].forEach(checkbox => {
-    checkbox.addEventListener('change', () => {
-        // When any checkbox changes, update the visibility of ALL dynamic fields
-        updateFormVisibility(); 
-    });
+    checkbox.addEventListener('change', updateFormVisibility); // <-- IMPORTANT: Calls updateFormVisibility
 });
 
 
@@ -173,7 +169,6 @@ function updateFormVisibility() {
         targetingOptionsSection.style.display = 'flex';
         optionsSection.style.display = 'flex';
         
-        // --- THIS IS THE NEW LOGIC ---
         // Show/hide Location/Count based on the University filter checkbox
         if (enableUniversityFilter.checked) {
             locationSection.style.display = 'none';
@@ -190,7 +185,6 @@ function updateFormVisibility() {
         if (enableDepartmentFilter.checked) {
             departmentFilterInput.style.display = 'flex';
         }
-        // --- END OF NEW LOGIC ---
 
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
