@@ -109,7 +109,7 @@ function validateForm() {
     submitButton.disabled = !isValid;
 }
 
-// --- Event Listeners ---
+// --- Event Listeners (UPDATED) ---
 // Location inputs
 [locationCityInput, locationOtherInput, countInput, urlsInput].forEach(input => {
     input.addEventListener('input', validateForm);
@@ -121,14 +121,17 @@ function validateForm() {
 // Tagify inputs
 departmentTagify.on('add', validateForm).on('remove', validateForm);
 universityTagify.on('add', validateForm).on('remove', validateForm);
-// Checkboxes
+
+// Checkboxes: This is the single source of truth for checkbox changes.
 [enableUniversityFilter, enableDepartmentFilter].forEach(checkbox => {
-    // UPDATED: Now calls updateFormVisibility to show/hide location
-    checkbox.addEventListener('change', updateFormVisibility);
+    checkbox.addEventListener('change', () => {
+        // When any checkbox changes, update the visibility of ALL dynamic fields
+        updateFormVisibility(); 
+    });
 });
 
 
-// --- Dynamic Form Logic ---
+// --- Dynamic Form Logic (Only for Location Type) ---
 locationTypeSelect.addEventListener('change', () => {
     cityStateFields.style.display = 'none';
     stateOnlyField.style.display = 'none';
@@ -145,16 +148,6 @@ locationTypeSelect.addEventListener('change', () => {
     validateForm(); 
 });
 
-enableUniversityFilter.addEventListener('change', () => {
-    universityFilterInput.style.display = enableUniversityFilter.checked ? 'flex' : 'none';
-    // validateForm() is now called by updateFormVisibility()
-});
-enableDepartmentFilter.addEventListener('change', () => {
-    departmentFilterInput.style.display = enableDepartmentFilter.checked ? 'flex' : 'none';
-    validateForm(); // This one can still call validateForm directly
-});
-
-
 // --- Tab and Visibility Logic (UPDATED) ---
 function updateFormVisibility() {
     const currentMode = modeInput.value;
@@ -165,6 +158,11 @@ function updateFormVisibility() {
     targetingOptionsSection.style.display = 'none';
     urlScrapeOptions.style.display = 'none';
     optionsSection.style.display = 'none';
+    
+    // Also hide the filter sub-inputs
+    universityFilterInput.style.display = 'none';
+    departmentFilterInput.style.display = 'none';
+
 
     // Show sections based on mode
     if (currentMode === 'full') {
@@ -184,11 +182,18 @@ function updateFormVisibility() {
             locationSection.style.display = 'flex';
             universityCountSection.style.display = 'flex';
         }
+        
+        // Show/hide the Tagify boxes based on checkboxes
+        if (enableUniversityFilter.checked) {
+            universityFilterInput.style.display = 'flex';
+        }
+        if (enableDepartmentFilter.checked) {
+            departmentFilterInput.style.display = 'flex';
+        }
         // --- END OF NEW LOGIC ---
 
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
-        // 'Options' is not shown here
     }
     
     // Trigger location dropdown logic to set the correct initial view
