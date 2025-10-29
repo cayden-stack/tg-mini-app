@@ -103,7 +103,53 @@ label {
     margin: 0;
 }
 
-input, select, textarea, .tagify {
+/* --- STYLES FOR LOCATION SECTION --- */
+.location-sub-fields {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    width: 100%;
+}
+.field-half {
+    flex: 1; /* Each takes up half the space */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.field-half input, .field-half select {
+    width: 100%;
+}
+#state-only-field select {
+    width: 100%;
+}
+
+/* --- STYLES FOR CHECKBOX SECTION --- */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Creates space between checkbox and label */
+}
+.checkbox-container input[type="checkbox"] {
+    /* Force checkbox to be small and not stretch */
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    margin: 0; /* Remove default margins */
+}
+.checkbox-container label {
+    /* Overrides the bold 'label' style */
+    font-weight: normal; 
+    font-size: 16px;
+    flex-grow: 1; /* Allow label to take remaining space */
+    width: auto; /* Remove any conflicting width */
+}
+/* This forces the inner form sections to use the theme's main BG */
+#university-filter-input, #department-filter-input {
+    background-color: var(--tg-theme-bg-color);
+}
+
+
+input, select, textarea { /* Note: .tagify is removed from here */
     width: 100%;
     padding: 12px;
     border-radius: 8px;
@@ -114,14 +160,25 @@ input, select, textarea, .tagify {
     box-sizing: border-box;
 }
 
-/* --- TAGIFY STYLES --- */
+/* --- TAGIFY STYLES (UPDATED) --- */
 .tagify {
+    /* New styles to match other inputs */
+    background-color: var(--tg-theme-bg-color);
+    border: none;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding doesn't break layout */
+    
+    /* Existing styles */
     padding: 0;
     margin-top: 5px;
 }
 .tagify__input {
-    padding: 12px;
+    padding: 12px; /* Match other inputs */
     color: var(--tg-theme-text-color) !important; 
+    
+    /* New style for the placeholder text */
+    --placeholder-color: var(--tg-theme-hint-color);
 }
 .tagify__tag {
     --tag-bg: var(--tg-theme-button-color);

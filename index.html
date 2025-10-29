@@ -15,7 +15,7 @@
 
     <div class="segmented-control">
         <button type="button" class="segment active" id="btn-full">Full Scrape</button>
-        <button type="button" class="segment" id="btn-directory">Directory Scrape</button>
+        <button type="button" class="segment" id="btn-directory">Targeted Scrape</button>
         <button type="button" class="segment" id="btn-url">URL Scrape</button>
     </div>
 
@@ -29,20 +29,85 @@
             <span class="chevron">v</span>
         </div>
         <div class="accordion-content active" style="display: flex;">
+
             <div id="location-section" class="form-section">
-                <label for="location">Location</label>
-                <input type="text" id="location" name="location" placeholder="e.g., California" required>
-                <p class="description">The geographical area to search for universities.</p>
+                <label for="location-type-select">Location Type</label>
+                <select id="location-type-select" name="locationType">
+                    <option value="city" selected>City & State</option>
+                    <option value="state">State Only</option>
+                    <option value="other">Other (e.g., Country)</option>
+                </select>
+
+                <div id="city-state-fields" class="location-sub-fields">
+                    <div class="field-half">
+                        <label for="location-city">City</label>
+                        <input type="text" id="location-city" name="locationCity" placeholder="e.g., Raleigh">
+                    </div>
+                    <div class="field-half">
+                        <label for="location-state">State</label>
+                        <select id="location-state" name="locationState">
+                            <option value="">Select...</option>
+                            <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option><option value="AR">AR</option><option value="CA">CA</option>
+                            <option value="CO">CO</option><option value="CT">CT</option><option value="DE">DE</option><option value="FL">FL</option><option value="GA">GA</option>
+                            <option value="HI">HI</option><option value="ID">ID</option><option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option>
+                            <option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option><option value="ME">ME</option><option value="MD">MD</option>
+                            <option value="MA">MA</option><option value_config="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option><option value="MO">MO</option>
+                            <option value="MT">MT</option><option value="NE">NE</option><option value="NV">NV</option><option value="NH">NH</option><option value="NJ">NJ</option>
+                            <option value="NM">NM</option><option value="NY">NY</option><option value="NC">NC</option><option value="ND">ND</option><option value="OH">OH</option>
+                            <option value="OK">OK</option><option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option><option value="SC">SC</option>
+                            <option value="SD">SD</option><option value="TN">TN</option><option value="TX">TX</option><option value="UT">UT</option><option value="VT">VT</option>
+                            <option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option><option value="WI">WI</option><option value="WY">WY</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="state-only-field" class="location-sub-fields" style="display: none;">
+                    <select id="location-state-only" name="locationStateOnly">
+                        <option value="">Select State...</option>
+                        <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option><option value="AR">AR</option><option value="CA">CA</option>
+                        <option value="CO">CO</option><option value="CT">CT</option><option value="DE">DE</option><option value="FL">FL</option><option value="GA">GA</option>
+                        <option value="HI">HI</option><option value="ID">ID</option><option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option>
+                        <option value="KS">KS</option><option value="KY">KY</option><option value="LA">LA</option><option value="ME">ME</option><option value="MD">MD</option>
+                        <option value="MA">MA</option><option value="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option><option value="MO">MO</option>
+                        <option value="MT">MT</option><option value="NE">NE</option><option value="NV">NV</option><option value="NH">NH</option><option value="NJ">NJ</option>
+                        <option value="NM">NM</option><option value="NY">NY</option><option value="NC">NC</option><option value="ND">ND</option><option value="OH">OH</option>
+                        <option value="OK">OK</option><option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option><option value="SC">SC</option>
+                        <option value="SD">SD</option><option value="TN">TN</option><option value="TX">TX</option><option value="UT">UT</option><option value="VT">VT</option>
+                        <option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option><option value="WI">WI</option><option value="WY">WY</option>
+                    </select>
+                </div>
+                
+                <div id="other-location-field" class="location-sub-fields" style="display: none;">
+                    <input type="text" id="location-other" name="locationOther" placeholder="e.g., Canada">
+                </div>
             </div>
             <div id="university-count-section" class="form-section">
                 <label for="university-count">University Count</label>
                 <input type="number" id="university-count" name="count" min="1" placeholder="e.g., 10" required>
                 <p class="description">The maximum number of universities to find.</p>
             </div>
-            <div id="directory-scrape-options" class="form-section" style="display: none;">
-                <label for="targets">Departments</label>
-                <input type="text" id="targets" name="targets" placeholder="e.g., biology, chemistry">
-                <p class="description">Type a department and press Enter to add it.</p>
+            
+            <div id="targeting-options-section" class="form-section" style="display: none;">
+                <label>Targeted Filters</label>
+                <p class="description">Select filters to apply. If both are unchecked, it will search all universities and departments.</p>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="enable-university-filter" name="enableUniversityFilter">
+                    <label for="enable-university-filter">Filter by University</label>
+                </div>
+                <div id="university-filter-input" class="form-section" style="display: none; margin-top: 10px;">
+                    <label for="universities">Universities</label>
+                    <input type="text" id="universities" name="universities" placeholder="Type a university and press Enter">
+                </div>
+
+                <div class="checkbox-container" style="margin-top: 15px;">
+                    <input type="checkbox" id="enable-department-filter" name="enableDepartmentFilter">
+                    <label for="enable-department-filter">Filter by Department</label>
+                </div>
+                <div id="department-filter-input" class="form-section" style="display: none; margin-top: 10px;">
+                    <label for="targets">Departments</label>
+                    <input type="text" id="targets" name="targets" placeholder="e.g., biology, chemistry">
+                </div>
             </div>
             <div id="url-scrape-options" class="form-section" style="display: none;">
                  <label for="urls">URLs to Scrape</label>
@@ -85,7 +150,6 @@
                     <option value="openai/gpt-5-mini">GPT-5 Mini</option>
                     <option value="openai/gpt-4o-nano">GPT-4o Nano</option>
                     <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
-    
                     <option value="openai/gpt-5-nano">GPT-5 Nano</option>
                 </select>
             </div>
