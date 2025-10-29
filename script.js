@@ -58,12 +58,12 @@ var departmentTagify = new Tagify(targetsInput);
 var universityTagify = new Tagify(universitiesInput);
 
 
-// --- Form Validation Logic ---
+// --- Form Validation Logic (UPDATED) ---
 function validateForm() {
     const currentMode = modeInput.value;
     let isValid = false;
 
-    // --- Location Validation ---
+    // --- Location Validation (now just a helper) ---
     let locationValid = false;
     const locationType = locationTypeSelect.value;
     if (locationType === 'city') {
@@ -74,17 +74,14 @@ function validateForm() {
         locationValid = locationOtherInput.value.trim() !== '';
     }
 
-    // --- Targeting Validation ---
-    let targetingValid = true; // Valid by default
+    // --- Targeting Validation (now just a helper) ---
+    let targetingValid = true; 
+    const universityFilterOn = enableUniversityFilter.checked;
+    const departmentFilterOn = enableDepartmentFilter.checked;
+    
     if (currentMode === 'directory') {
-        // If in directory mode, at least one filter must be enabled and filled
-        const universityFilterOn = enableUniversityFilter.checked;
-        const departmentFilterOn = enableDepartmentFilter.checked;
-        
         if (!universityFilterOn && !departmentFilterOn) {
-             // If neither is on, it's invalid (or you can change this to mean "all")
-             // For now, let's require at least one.
-             targetingValid = false; 
+             targetingValid = false; // Require at least one filter
         }
         if (universityFilterOn && universityTagify.value.length === 0) {
             targetingValid = false; // Enabled but empty
@@ -94,11 +91,17 @@ function validateForm() {
         }
     }
     
-    // --- Final Validation Check ---
+    // --- Final Validation Check (UPDATED) ---
     if (currentMode === 'full') {
         isValid = locationValid && countInput.value.trim() !== '';
     } else if (currentMode === 'directory') {
-        isValid = locationValid && countInput.value.trim() !== '' && targetingValid;
+        if (universityFilterOn) {
+            // If filtering by University, we only need targeting to be valid
+            isValid = targetingValid;
+        } else {
+            // If NOT filtering by University, we need Location, Count, AND targeting
+            isValid = locationValid && countInput.value.trim() !== '' && targetingValid;
+        }
     } else if (currentMode === 'url') {
         isValid = urlsInput.value.trim() !== '';
     }
@@ -120,12 +123,12 @@ departmentTagify.on('add', validateForm).on('remove', validateForm);
 universityTagify.on('add', validateForm).on('remove', validateForm);
 // Checkboxes
 [enableUniversityFilter, enableDepartmentFilter].forEach(checkbox => {
-    checkbox.addEventListener('change', validateForm);
+    // UPDATED: Now calls updateFormVisibility to show/hide location
+    checkbox.addEventListener('change', updateFormVisibility);
 });
 
 
 // --- Dynamic Form Logic ---
-// 1. Location Type Dropdown
 locationTypeSelect.addEventListener('change', () => {
     cityStateFields.style.display = 'none';
     stateOnlyField.style.display = 'none';
@@ -139,21 +142,20 @@ locationTypeSelect.addEventListener('change', () => {
     } else if (selectedType === 'other') {
         otherLocationField.style.display = 'flex';
     }
-    validateForm(); // Re-validate after changing layout
+    validateForm(); 
 });
 
-// 2. Targeting Checkboxes
 enableUniversityFilter.addEventListener('change', () => {
     universityFilterInput.style.display = enableUniversityFilter.checked ? 'flex' : 'none';
-    validateForm();
+    // validateForm() is now called by updateFormVisibility()
 });
 enableDepartmentFilter.addEventListener('change', () => {
     departmentFilterInput.style.display = enableDepartmentFilter.checked ? 'flex' : 'none';
-    validateForm();
+    validateForm(); // This one can still call validateForm directly
 });
 
 
-// --- Tab and Visibility Logic ---
+// --- Tab and Visibility Logic (UPDATED) ---
 function updateFormVisibility() {
     const currentMode = modeInput.value;
 
@@ -165,34 +167,45 @@ function updateFormVisibility() {
     optionsSection.style.display = 'none';
 
     // Show sections based on mode
-    if (currentMode === 'full' || currentMode === 'directory') {
+    if (currentMode === 'full') {
         locationSection.style.display = 'flex';
         universityCountSection.style.display = 'flex';
         optionsSection.style.display = 'flex';
-    }
-    
-    if (currentMode === 'directory') {
+    } else if (currentMode === 'directory') {
         targetingOptionsSection.style.display = 'flex';
+        optionsSection.style.display = 'flex';
+        
+        // --- THIS IS THE NEW LOGIC ---
+        // Show/hide Location/Count based on the University filter checkbox
+        if (enableUniversityFilter.checked) {
+            locationSection.style.display = 'none';
+            universityCountSection.style.display = 'none';
+        } else {
+            locationSection.style.display = 'flex';
+            universityCountSection.style.display = 'flex';
+        }
+        // --- END OF NEW LOGIC ---
+
     } else if (currentMode === 'url') {
         urlScrapeOptions.style.display = 'flex';
+        // 'Options' is not shown here
     }
     
-    // Trigger location dropdown logic to show the correct sub-fields
+    // Trigger location dropdown logic to set the correct initial view
     locationTypeSelect.dispatchEvent(new Event('change'));
     
-    validateForm();
+    validateForm(); // Run validation at the end of every update
 }
 
-// --- Segmented Control Click Logic ---
+// --- Segmented Control Click Logic (Unchanged) ---
 segments.forEach(segment => {
     segment.addEventListener('click', () => {
         segments.forEach(s => s.classList.remove('active'));
         segment.classList.add('active');
 
-        // Update button text in HTML to "Targeted Scrape"
         if (segment.id === 'btn-full') {
             modeInput.value = 'full';
-        } else if (segment.id === 'btn-directory') { // This ID matches your HTML
+        } else if (segment.id === 'btn-directory') {
             modeInput.value = 'directory';
         } else if (segment.id === 'btn-url') {
             modeInput.value = 'url';
@@ -218,10 +231,10 @@ accordionHeaders.forEach(header => {
     });
 });
 
-// --- Run on page load ---
+// --- Run on page load (Unchanged) ---
 updateFormVisibility();
 
-// --- Final Form Submission Logic ---
+// --- Final Form Submission Logic (Unchanged) ---
 form.addEventListener('submit', async function(event) {
     event.preventDefault();
     submitButton.disabled = true;
