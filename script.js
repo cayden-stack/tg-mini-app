@@ -1,5 +1,5 @@
 // This should be the webhook URL from your Pipedream workflow
-const PIPEDREAM_WEBHOOK_URL = 'https://eo9iczuzcub5ams.m.pipedream.net';
+const PIPEDREAM_WEBHOOK_URL = 'https://eoym65ndupcfxd5.m.pipedream.net';
 
 // This mock object is for local testing. It won't run inside Telegram.
 if (window.Telegram === undefined) {
